@@ -11,6 +11,7 @@ export class Universe {
   private letters: Cell[] = []; private stars: Cell[] = [];
   private raf = 0; private time = 0; private last = 0; private paused = false;
   private mode = 0; private pointer = { x: -9999, y: -9999 }; private pulse = -10;
+  private showTitle = true;
   private observer: ResizeObserver;
   constructor(private canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d', { alpha: false })!;
@@ -23,6 +24,7 @@ export class Universe {
   }
   setPaused(value: boolean) { this.paused = value; this.last = 0; this.render(); this.wake(); }
   setMode(value: number) { this.mode = value; this.render(); }
+  setShowTitle(value: boolean) { this.showTitle = value; this.render(); }
   private resize = () => {
     const { width, height } = this.canvas.getBoundingClientRect();
     this.width = width; this.height = height; this.cell = width < 650 ? 4 : width < 1000 ? 5 : 6;
@@ -39,11 +41,11 @@ export class Universe {
     const font = Math.min(this.width * (mobile ? .191 : .157), this.height * .21);
     c.font = `900 ${font}px Arial, sans-serif`; c.textBaseline = 'middle';
     c.fillStyle = 'white';
-    const spacing = font * 1.02; const center = this.height * (mobile ? .435 : .46);
-    for (const [i, word] of ['ABDULLAH','SALEEM'].entries()) {
+    const center = Math.min(this.height * (mobile ? .33 : .36), mobile ? 265 : 330);
+    for (const word of ['ABDULLAH']) {
       const textWidth = c.measureText(word).width;
       const target = this.width * (mobile ? .85 : .82);
-      c.save(); c.translate((this.width-target)/2,center + (i-.5)*spacing);
+      c.save(); c.translate((this.width-target)/2,center);
       c.scale(target/textWidth,1); c.fillText(word,0,0); c.restore();
     }
     const pixels = c.getImageData(0,0,off.width,off.height).data;
@@ -76,10 +78,10 @@ export class Universe {
     for(const s of this.stars){c.fillStyle=ink(.10+s.seed*.23);c.fillText(s.seed>.94?'+':'.',s.x,s.y);}
     const mobile=w<650;
     const holes:Hole[]=[
-      {x:w*(.75+.035*Math.sin(t*.13)),y:h*(.65+.02*Math.cos(t*.17)),radius:Math.min(w*.14,h*.17),tilt:-.33,phase:0},
+      {x:w*(.75+.035*Math.sin(t*.13)),y:h*((mobile ? .46 : .65)+.015*Math.cos(t*.17)),radius:Math.min(w*.14,h*.17),tilt:-.33,phase:0},
       {x:w*(.20+.045*Math.cos(t*.12)),y:h*(.235+.02*Math.sin(t*.16)),radius:Math.min(w*.067,h*.087),tilt:.35,phase:2},
     ];
-    for(const p of this.letters){
+    for(const p of this.showTitle ? this.letters : []){
       let x=p.x,y=p.y; let bright=.49+p.seed*.43;
       if(!this.paused){
         const dx=x-this.pointer.x,dy=y-this.pointer.y,d=Math.hypot(dx,dy);
@@ -123,7 +125,6 @@ export class Universe {
       }
       drawDisk(true);
       c.textAlign='left';c.font="9px 'Courier New',monospace";c.fillStyle=ink(.45);
-      if(!mobile){c.fillText(hole.phase?'SINGULARITY / 02':'EVENT HORIZON / 01',hole.x+hole.radius*.9,hole.y+hole.radius*.66);}
       c.font=`${this.cell+1}px 'Courier New',monospace`;c.textAlign='center';
     }
   }

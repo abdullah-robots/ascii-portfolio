@@ -1,5 +1,34 @@
 # Abdullah Saleem — A small universe
 
+## Portfolio pages iteration
+
+Development continues on `feature/portfolio-pages`. GitHub `main` retains the initial art-led version.
+
+- Home: first-name ASCII hero with a short professional introduction.
+- About: concise biography, current/previous roles and education, based on the supplied October 2026 résumé. This is a personal website.
+- Projects: an intentional empty grid, ready for project entries.
+
+Routes use `#/about` and `#/projects`, so direct links and refresh work on a static host without server rewrite rules. Navigation moves focus to the page heading and updates the document title. The animated background stays continuous across page changes and becomes subdued behind content.
+
+### Add a project
+
+Edit `src/projects.ts` and add an entry to `projects`. The real cards automatically replace the empty state. Optional images go in `public/projects/` and use paths such as `/projects/robot.jpg`.
+
+```ts
+{
+  id: 'project-slug',
+  title: 'Project title',
+  category: 'Robotics',
+  year: '2026',
+  description: 'A short explanation of the problem and what you built.',
+  tags: ['ROS 2', 'C++'],
+  image: '/projects/robot.jpg', // optional
+  href: 'https://github.com/your-account/your-project', // optional
+}
+```
+
+The grid is intentionally empty in the published version; no résumé projects are presented as personal work by default.
+
 A nearly wordless personal portfolio: dynamic ASCII typography, drifting singularities, and particle accretion disks. Independent personal work; no employer affiliation is implied.
 
 ## Develop
