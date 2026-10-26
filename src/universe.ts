@@ -41,7 +41,8 @@ export class Universe {
     const font = Math.min(this.width * (mobile ? .191 : .157), this.height * .21);
     c.font = `900 ${font}px Arial, sans-serif`; c.textBaseline = 'middle';
     c.fillStyle = 'white';
-    const center = Math.min(this.height * (mobile ? .33 : .36), mobile ? 265 : 330);
+    // Keep the name in the visual gap between the upper and lower orbits.
+    const center = this.height * (mobile ? .365 : .465);
     for (const word of ['ABDULLAH']) {
       const textWidth = c.measureText(word).width;
       const target = this.width * (mobile ? .85 : .82);

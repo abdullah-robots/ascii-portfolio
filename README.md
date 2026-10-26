@@ -4,8 +4,10 @@
 
 Development continues on `feature/portfolio-pages`. GitHub `main` retains the initial art-led version.
 
-- Home: first-name ASCII hero with a short professional introduction.
-- About: concise biography, current/previous roles and education, based on the supplied October 2026 résumé. This is a personal website.
+For Cloudflare Pages build settings and direct upload instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
+- Home: first-name ASCII hero between two drifting black holes, with minimal page links and Robotics / AI / Curiosity.
+- About: focus areas, current/previous roles and education. This is a personal website.
 - Projects: an intentional empty grid, ready for project entries.
 
 Routes use `#/about` and `#/projects`, so direct links and refresh work on a static host without server rewrite rules. Navigation moves focus to the page heading and updates the document title. The animated background stays continuous across page changes and becomes subdued behind content.
@@ -66,3 +68,5 @@ Visual direction informed by the supplied screenshots, [Dao Ho](https://www.daoh
 ## Validation
 
 TypeScript check and production build passed. Desktop and 390px mobile layouts were inspected in the browser; mobile had no horizontal overflow. Palette cycling and pause/resume were exercised, and the browser reported no errors or warnings. Reduced-motion and hidden-tab behavior are implemented; no physical mobile device or sustained performance benchmark has been run.
+
+Cloudflare preparation: the frozen pnpm install and production build pass with pnpm 11.25.0. The static output includes `index.html`, fingerprinted assets, favicon and `_headers`; upload the contents of `dist/`. See `DEPLOYMENT.md` for GitHub branch and environment settings. Cloudflare account deployment remains a user step.
