@@ -61,12 +61,4 @@ The renderer limits animation to approximately 30 fps, caps device pixel ratio a
 
 Adjust `src/universe.ts` for typography, particle density, drift, palette and distortion. Edit `src/style.css` for the editorial frame. No model, image or video assets are needed.
 
-## References
-
-Visual direction informed by the supplied screenshots, [Dao Ho](https://www.daoho.dev/), and [Inspora's Shark on vacation](https://www.inspora.design/posts/shark-on-vacation). All scene geometry and rendering code in this project were written for this portfolio.
-
-## Validation
-
-TypeScript check and production build passed. Desktop and 390px mobile layouts were inspected in the browser; mobile had no horizontal overflow. Palette cycling and pause/resume were exercised, and the browser reported no errors or warnings. Reduced-motion and hidden-tab behavior are implemented; no physical mobile device or sustained performance benchmark has been run.
-
 Cloudflare preparation: the frozen pnpm install and production build pass with pnpm 11.25.0. The static output includes `index.html`, fingerprinted assets, favicon and `_headers`; upload the contents of `dist/`. See `DEPLOYMENT.md` for GitHub branch and environment settings. Cloudflare account deployment remains a user step.
