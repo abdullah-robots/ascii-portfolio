@@ -1,12 +1,8 @@
 # Abdullah Saleem — A small universe
 
-## Portfolio pages iteration
+## Pages
 
-Development continues on `feature/portfolio-pages`. GitHub `main` retains the initial art-led version.
-
-For Cloudflare Pages build settings and direct upload instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
-
-- Home: first-name ASCII hero between two drifting black holes, with minimal page links and Robotics / AI / Curiosity.
+- Home: first-name ASCII hero between two drifting black holes, with minimal page links.
 - About: focus areas, current/previous roles and education. This is a personal website.
 - Projects: an intentional empty grid, ready for project entries.
 
@@ -35,16 +31,18 @@ A nearly wordless personal portfolio: dynamic ASCII typography, drifting singula
 
 ## Develop
 
-Use Node.js 22+ and npm or pnpm.
+Use Node.js 22+ and pnpm 11.25.0. Dependencies are pinned by `pnpm-lock.yaml`.
 
 ```sh
-npm install
-npm run dev
-npm run build
-npm run preview
+pnpm install --frozen-lockfile
+pnpm dev
+pnpm build
+pnpm preview
 ```
 
 The production output is `dist/`. It can be hosted on any static host. This checkout also contains a Sites static-hosting manifest.
+
+`pnpm test` runs the renderer lifecycle and routing checks. `pnpm format` formats the source, and `pnpm format:check` checks formatting without changing files.
 
 ## Interact
 
@@ -61,4 +59,6 @@ The renderer limits animation to approximately 30 fps, caps device pixel ratio a
 
 Adjust `src/universe.ts` for typography, particle density, drift, palette and distortion. Edit `src/style.css` for the editorial frame. No model, image or video assets are needed.
 
-Cloudflare preparation: the frozen pnpm install and production build pass with pnpm 11.25.0. The static output includes `index.html`, fingerprinted assets, favicon and `_headers`; upload the contents of `dist/`. See `DEPLOYMENT.md` for GitHub branch and environment settings. Cloudflare account deployment remains a user step.
+`src/App.tsx` contains the shared shell and controls, `src/pages.tsx` contains page content, and `src/projects.ts` is the project list. `usePage.ts` handles hash navigation and focus; `useUniverse.ts` connects React to the canvas renderer. Palette names and colors live together in `src/palettes.ts`.
+
+Cloudflare preparation: the frozen pnpm install and production build pass with pnpm 11.25.0. The static output includes `index.html`, fingerprinted assets, favicon and `_headers`; upload the contents of `dist/`. Cloudflare account deployment remains a user step.
