@@ -16,3 +16,4 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 
 .site-header nav{position:absolute;left:50%;transform:translateX(-50%)}.about-story .focus-list{margin-top:0}@media(max-width:700px){.site-header nav{position:static;transform:none}.social-links{justify-content:flex-start}.controls{grid-column:auto;gap:14px}.site-footer{min-height:92px}.home-content{height:calc(100svh - 172px);min-height:530px}.page-content{min-height:calc(100svh - 172px)}}
+.site-header{justify-content:center}

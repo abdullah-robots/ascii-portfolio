@@ -41,19 +41,17 @@ function App() {
     <a className="skip-link" href="#content" onClick={e => { e.preventDefault(); heading.current?.focus(); }}>Skip to content</a>
     <canvas ref={canvas} aria-hidden="true" />
     <header className="site-header">
-      <a className="monogram" href="#/" aria-label="Abdullah home">a<span>.</span></a>
       <nav aria-label="Main navigation">{(['home','about','projects'] as Page[]).map(p => <a key={p} href={p === 'home' ? '#/' : '#/' + p} aria-current={page === p ? 'page' : undefined}>{p[0].toUpperCase() + p.slice(1)}<span className="nav-dot" /></a>)}</nav>
     </header>
     {page === 'home' ? <main id="content" className="home-content">
       <h1 ref={heading} tabIndex={-1} className="sr-only">Abdullah</h1>
-      <div className="home-eyebrow"><span className="status-dot" /> ROBOTICS / AI / CURIOSITY</div>
       <div className="home-intro"><div className="home-links"><a className="primary-link" href="#/about">A little about me <span>↗</span></a><a className="text-link" href="#/projects">Explore my work <span>→</span></a></div></div>
     </main> : page === 'about' ? <main id="content" className="page-content">
       <div className="page-topline"><span className="eyebrow">01 / ABOUT</span><span className="eyebrow muted">THE PERSON BEHIND THE PIXELS</span></div>
       <h1 ref={heading} tabIndex={-1}>Hi, I’m Abdullah<span className="accent">.</span></h1>
       <p className="page-lead">I build software that brings<br className="desktop-break"/> robots into the real world.</p>
-      <div className="about-layout"><div className="about-story"><div className="focus-list" aria-label="Areas of focus"><span>Robotics</span><span>Control systems</span><span>Computer vision</span><span>Language-agnostic</span></div><a className="primary-link" href="#/projects">Explore my work <span>→</span></a></div><aside className="about-facts"><div className="fact"><span className="eyebrow">NOW</span><p>Oxford Robotics Institute</p><small>Robotics Software Engineer · 2026–present</small></div><div className="fact"><span className="eyebrow">BEFORE</span><p>RACE / UKAEA</p><small>Mechatronics & control · 2024–2026</small></div><div className="fact"><span className="eyebrow">FOUNDATIONS</span><p>Physics → Robotics</p><small>BSc Physics · Royal Holloway<br/>MSc Computer Vision, Robotics & ML · Surrey</small></div></aside></div>
-      <div className="page-closing"><p>Always curious about what comes next.</p><a href="https://www.linkedin.com/in/abdullah-saleem-147044239/" target="_blank" rel="noopener noreferrer">Get in touch ↗</a></div>
+      <div className="about-layout"><div className="about-story"><div className="focus-list" aria-label="Areas of focus"><span>Robotics</span><span>Control systems</span><span>Computer vision</span><span>Language-agnostic</span></div><a className="primary-link" href="#/projects">Explore my work <span>→</span></a></div><aside className="about-facts"><div className="fact"><span className="eyebrow">NOW</span><p>Oxford Robotics Institute</p><small>Robotics Software Engineer · 2026–present</small></div><div className="fact"><span className="eyebrow">BEFORE</span><p>RACE / UKAEA</p><small>Control Systems Engineer · 2024–2026</small></div><div className="fact"><span className="eyebrow">FOUNDATIONS</span><p>Physics → Robotics</p><small>BSc Physics · Royal Holloway<br/>MSc Computer Vision, Robotics & ML · Surrey</small></div></aside></div>
+      <div className="page-closing"><p>Always curious about what comes next.</p></div>
     </main> : <main id="content" className="page-content projects-content">
       <div className="page-topline"><span className="eyebrow">02 / PROJECTS</span><span className="eyebrow muted">{String(projects.length).padStart(2,'0')} PUBLISHED</span></div>
       <h1 ref={heading} tabIndex={-1}>Things I’ve built<span className="accent">.</span></h1>
