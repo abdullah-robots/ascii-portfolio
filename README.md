@@ -1,5 +1,36 @@
 # Abdullah Saleem — A small universe
 
+## Portfolio pages iteration
+
+Development continues on `feature/portfolio-pages`. GitHub `main` retains the initial art-led version.
+
+For Cloudflare Pages build settings and direct upload instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
+- Home: first-name ASCII hero between two drifting black holes, with minimal page links and Robotics / AI / Curiosity.
+- About: focus areas, current/previous roles and education. This is a personal website.
+- Projects: an intentional empty grid, ready for project entries.
+
+Routes use `#/about` and `#/projects`, so direct links and refresh work on a static host without server rewrite rules. Navigation moves focus to the page heading and updates the document title. The animated background stays continuous across page changes and becomes subdued behind content.
+
+### Add a project
+
+Edit `src/projects.ts` and add an entry to `projects`. The real cards automatically replace the empty state. Optional images go in `public/projects/` and use paths such as `/projects/robot.jpg`.
+
+```ts
+{
+  id: 'project-slug',
+  title: 'Project title',
+  category: 'Robotics',
+  year: '2026',
+  description: 'A short explanation of the problem and what you built.',
+  tags: ['ROS 2', 'C++'],
+  image: '/projects/robot.jpg', // optional
+  href: 'https://github.com/your-account/your-project', // optional
+}
+```
+
+The grid is intentionally empty in the published version; no résumé projects are presented as personal work by default.
+
 A nearly wordless personal portfolio: dynamic ASCII typography, drifting singularities, and particle accretion disks. Independent personal work; no employer affiliation is implied.
 
 ## Develop
@@ -30,10 +61,4 @@ The renderer limits animation to approximately 30 fps, caps device pixel ratio a
 
 Adjust `src/universe.ts` for typography, particle density, drift, palette and distortion. Edit `src/style.css` for the editorial frame. No model, image or video assets are needed.
 
-## References
-
-Visual direction informed by the supplied screenshots, [Dao Ho](https://www.daoho.dev/), and [Inspora's Shark on vacation](https://www.inspora.design/posts/shark-on-vacation). All scene geometry and rendering code in this project were written for this portfolio.
-
-## Validation
-
-TypeScript check and production build passed. Desktop and 390px mobile layouts were inspected in the browser; mobile had no horizontal overflow. Palette cycling and pause/resume were exercised, and the browser reported no errors or warnings. Reduced-motion and hidden-tab behavior are implemented; no physical mobile device or sustained performance benchmark has been run.
+Cloudflare preparation: the frozen pnpm install and production build pass with pnpm 11.25.0. The static output includes `index.html`, fingerprinted assets, favicon and `_headers`; upload the contents of `dist/`. See `DEPLOYMENT.md` for GitHub branch and environment settings. Cloudflare account deployment remains a user step.
