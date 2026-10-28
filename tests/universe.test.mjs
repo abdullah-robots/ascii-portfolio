@@ -8,7 +8,7 @@ import ts from 'typescript';
 
 // Compile the real modules for Node's built-in runner; the normal build checks types.
 const directory = await mkdtemp(join(tmpdir(), 'ascii-universe-test-'));
-const modules = ['palettes', 'navigation', 'universe'];
+const modules = ['themes', 'navigation', 'starlight', 'universe'];
 for (const name of modules) {
   const source = await readFile(new URL(`../src/${name}.ts`, import.meta.url), 'utf8');
   const { outputText } = ts.transpileModule(source, {
@@ -16,7 +16,7 @@ for (const name of modules) {
   });
   await writeFile(
     join(directory, `${name}.mjs`),
-    outputText.replace("'./palettes'", "'./palettes.mjs'"),
+    outputText.replace(/from '\.\/(\w+)'/g, "from './$1.mjs'"),
   );
 }
 const { Universe } = await import(pathToFileURL(join(directory, 'universe.mjs')));
@@ -52,6 +52,7 @@ function environment({ width = 390, height = 844, contextAvailable = true } = {}
       fillText: () => {
         draws++;
       },
+      createRadialGradient: () => ({ addColorStop() {} }),
     },
     { get: (target, property) => target[property] ?? (() => {}) },
   );
@@ -110,7 +111,7 @@ function environment({ width = 390, height = 844, contextAvailable = true } = {}
 function createScene(env, options = {}) {
   return Universe.create(env.canvas, {
     paused: false,
-    palette: 'phosphor',
+    theme: 'void',
     showTitle: true,
     ...options,
   });
@@ -193,6 +194,31 @@ test('destroy prevents queued callbacks or browser events from restarting the sc
   scene.setPaused(false);
   assert.equal(env.frames.size, 0);
   assert.equal(env.draws, draws);
+});
+
+test('switching themes animates a wipe without starting a second loop', () => {
+  const env = environment();
+  const scene = createScene(env);
+  env.frame(0);
+  scene.setTheme('starlight', { x: 200, y: 40 });
+  assert.equal(env.frames.size, 1);
+  for (let time = 40; time < 2000; time += 40) env.frame(time);
+  assert.equal(env.frames.size, 1);
+  const settled = env.draws;
+  env.frame(2040);
+  assert.ok(env.draws > settled);
+  scene.destroy();
+});
+
+test('a paused scene switches themes immediately and still draws', () => {
+  const env = environment();
+  const scene = createScene(env, { paused: true, theme: 'starlight' });
+  const draws = env.draws;
+  assert.ok(draws > 0);
+  scene.setTheme('void');
+  assert.ok(env.draws > draws);
+  assert.equal(env.frames.size, 0);
+  scene.destroy();
 });
 
 test('static-host deep links resolve to their pages and unknown fragments fall back home', () => {

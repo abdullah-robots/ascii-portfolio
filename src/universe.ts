@@ -1,4 +1,5 @@
-import { PALETTES, type Palette } from './palettes';
+import { drawStarlight } from './starlight';
+import { THEMES, type Theme } from './themes';
 
 type Cell = { x: number; y: number; seed: number; edge: boolean };
 type Star = Omit<Cell, 'edge'>;
@@ -17,17 +18,19 @@ type Hole = {
   particles: readonly Particle[];
 };
 type Ink = (opacity: number) => string;
-type UniverseOptions = { paused: boolean; palette: Palette; showTitle: boolean };
+type UniverseOptions = { paused: boolean; theme: Theme; showTitle: boolean };
+type Wipe = { from: Theme; start: number; x: number; y: number };
 
-const BACKGROUND = '#111210';
+const BACKGROUND = THEMES.void.background;
 const MOBILE_BREAKPOINT = 650;
 const FRAME_INTERVAL_MS = 32;
 const DESKTOP_PARTICLE_COUNT = 1900;
 const MOBILE_PARTICLE_COUNT = 1100;
 const NAME_CHARACTERS = '.:+*x%#@';
 const DISK_CHARACTERS = '.:+*x%#';
+const WIPE_SECONDS = 1.5;
 
-// Deterministic noise keeps the composition stable across resizes and palette changes.
+// Deterministic noise keeps the composition stable across resizes and theme changes.
 function hash(value: number): number {
   const seed = Math.sin(value * 127.1 + 311.7) * 43758.5453;
   return seed - Math.floor(seed);
@@ -60,7 +63,8 @@ export class Universe {
   private time = 0;
   private lastFrame: number | null = null;
   private paused: boolean;
-  private palette: Palette;
+  private theme: Theme;
+  private wipe: Wipe | null = null;
   private showTitle: boolean;
   private pointer = { x: -9999, y: -9999 };
   private pulse = -10;
@@ -78,7 +82,7 @@ export class Universe {
     options: UniverseOptions,
   ) {
     this.paused = options.paused;
-    this.palette = options.palette;
+    this.theme = options.theme;
     this.showTitle = options.showTitle;
     this.observer = new ResizeObserver(this.resize);
     this.observer.observe(canvas);
@@ -97,9 +101,18 @@ export class Universe {
     this.wake();
   }
 
-  setPalette(value: Palette): void {
-    if (this.palette === value || this.destroyed) return;
-    this.palette = value;
+  /** Switches scenes; while animating, the new one spreads outward from `origin`. */
+  setTheme(value: Theme, origin?: { x: number; y: number }): void {
+    if (this.theme === value || this.destroyed) return;
+    this.wipe = this.paused
+      ? null
+      : {
+          from: this.theme,
+          start: this.time,
+          x: origin?.x ?? this.width / 2,
+          y: origin?.y ?? 0,
+        };
+    this.theme = value;
     this.render();
   }
 
@@ -256,12 +269,74 @@ export class Universe {
 
   private render(): void {
     if (!this.width || !this.height || this.destroyed) return;
-    const rgb = PALETTES[this.palette].rgb.join(',');
+    this.drawScene(this.theme);
+    if (!this.wipe) return;
+    const progress = Math.min(1, (this.time - this.wipe.start) / WIPE_SECONDS);
+    if (progress >= 1 || this.paused) {
+      this.wipe = null;
+      return;
+    }
+    const { x, y } = this.wipe;
+    const farthest = Math.max(
+      Math.hypot(x, y),
+      Math.hypot(this.width - x, y),
+      Math.hypot(x, this.height - y),
+      Math.hypot(this.width - x, this.height - y),
+    );
+    const radius = (1 - Math.pow(1 - progress, 3)) * farthest;
+    // The outgoing scene stays visible outside the growing circle.
+    const context = this.context;
+    context.save();
+    context.beginPath();
+    context.rect(0, 0, this.width, this.height);
+    context.arc(x, y, radius, 0, Math.PI * 2);
+    context.clip('evenodd');
+    this.drawScene(this.wipe.from);
+    context.restore();
+    this.drawWipeEdge(x, y, radius, 1 - progress);
+  }
+
+  private drawScene(theme: Theme): void {
+    if (theme === 'starlight') {
+      drawStarlight({
+        context: this.context,
+        width: this.width,
+        height: this.height,
+        cell: this.cell,
+        time: this.time,
+        paused: this.paused,
+        pointer: this.pointer,
+        pulse: this.pulse,
+        titleCenter: this.titleCenter,
+        letters: this.showTitle ? this.letters : null,
+        stars: this.stars,
+        mobile: this.width < MOBILE_BREAKPOINT,
+      });
+      return;
+    }
+    const rgb = THEMES.void.rgb.join(',');
     const ink: Ink = (opacity) => `rgba(${rgb},${opacity})`;
     this.drawBackdrop(ink);
     const holes = this.createHoles();
     if (this.showTitle) this.drawName(holes, ink);
     for (const hole of holes) this.drawHole(hole, ink);
+  }
+
+  /** A sparkling seam of characters in the incoming scene's ink. */
+  private drawWipeEdge(x: number, y: number, radius: number, fade: number): void {
+    const rgb = THEMES[this.theme].rgb.join(',');
+    const count = Math.min(520, Math.ceil((radius * Math.PI * 2) / (this.cell * 1.6)));
+    for (let index = 0; index < count; index++) {
+      const angle = (index / count) * Math.PI * 2;
+      const seed = hash(index * 7.3 + Math.floor(this.time * 12));
+      const wobble = radius + (seed - 0.5) * this.cell * 4;
+      this.context.fillStyle = `rgba(${rgb},${(0.3 + 0.7 * seed) * fade})`;
+      this.context.fillText(
+        seed > 0.82 ? '*' : seed > 0.5 ? '+' : '.',
+        Math.round((x + Math.cos(angle) * wobble) / this.cell) * this.cell,
+        Math.round((y + Math.sin(angle) * wobble) / this.cell) * this.cell,
+      );
+    }
   }
 
   private drawBackdrop(ink: Ink): void {
