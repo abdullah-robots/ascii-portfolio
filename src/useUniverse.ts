@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
-import { nextPalette, type Palette } from './palettes';
+import { storedTheme, storeTheme, THEMES, type Theme } from './themes';
 import { Universe } from './universe';
+
+type Origin = { x: number; y: number };
 
 export function useUniverse(
   canvas: RefObject<HTMLCanvasElement | null>,
@@ -9,10 +11,11 @@ export function useUniverse(
   const [paused, setPaused] = useState(
     () => matchMedia('(prefers-reduced-motion: reduce)').matches,
   );
-  const [palette, setPalette] = useState<Palette>('phosphor');
+  const [theme, setTheme] = useState<Theme>(storedTheme);
   const [canvasAvailable, setCanvasAvailable] = useState(true);
   const scene = useRef<Universe | null>(null);
-  const initialOptions = useRef({ paused, palette, showTitle });
+  const themeOrigin = useRef<Origin | undefined>(undefined);
+  const initialOptions = useRef({ paused, theme, showTitle });
 
   useEffect(() => {
     if (!canvas.current) return;
@@ -36,17 +39,29 @@ export function useUniverse(
     scene.current?.setPaused(paused);
   }, [paused]);
   useEffect(() => {
-    scene.current?.setPalette(palette);
-  }, [palette]);
+    scene.current?.setTheme(theme, themeOrigin.current);
+    storeTheme(theme);
+    document.documentElement.dataset.theme = theme;
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', THEMES[theme].background);
+  }, [theme]);
   useEffect(() => {
     scene.current?.setShowTitle(showTitle);
   }, [showTitle]);
 
   return {
     paused,
-    palette,
+    theme,
     canvasAvailable,
     togglePaused: () => setPaused((value) => !value),
-    cyclePalette: () => setPalette(nextPalette),
+    toggleTheme: (origin?: Origin) => {
+      themeOrigin.current = origin;
+      // Let the page's colours ease over while the canvas wipe plays.
+      const root = document.documentElement;
+      root.classList.add('theme-shifting');
+      setTimeout(() => root.classList.remove('theme-shifting'), 1200);
+      setTheme((value) => (value === 'void' ? 'starlight' : 'void'));
+    },
   };
 }

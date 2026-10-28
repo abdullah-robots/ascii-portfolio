@@ -48,7 +48,7 @@ The production output is `dist/`. It can be hosted on any static host. This chec
 
 - Move the pointer to bend nearby characters and particles.
 - Click the canvas to send a ripple through the name.
-- Cycle Phosphor, Amber and Ice palettes.
+- Press the sun in the top bar to switch to Starlight: an ivory-and-gold sky of radiant ASCII stars that spreads out from the button. The moon brings back the night. The choice is remembered.
 - Pause or resume with the keyboard-accessible control.
 
 ## Implementation
@@ -57,8 +57,8 @@ React + TypeScript + Vite, with a single Canvas 2D renderer. The name is sampled
 
 The renderer limits animation to approximately 30 fps, caps device pixel ratio at 2, uses fewer particles on small screens, and stops drawing when hidden or paused. `prefers-reduced-motion` starts the scene still and responds to system preference changes. A semantic heading and ordinary social links remain available to assistive technology. The UI font has a local monospace fallback.
 
-Adjust `src/universe.ts` for typography, particle density, drift, palette and distortion. Edit `src/style.css` for the editorial frame. No model, image or video assets are needed.
+Adjust `src/universe.ts` for typography, particle density, drift and distortion, and `src/starlight.ts` for the light theme's stars, halos, stardust and gilt lettering. Edit `src/style.css` for the editorial frame. No model, image or video assets are needed.
 
-`src/App.tsx` contains the shared shell and controls, `src/pages.tsx` contains page content, and `src/projects.ts` is the project list. `usePage.ts` handles hash navigation and focus; `useUniverse.ts` connects React to the canvas renderer. Palette names and colors live together in `src/palettes.ts`.
+`src/App.tsx` contains the shared shell and controls, `src/pages.tsx` contains page content, and `src/projects.ts` is the project list. `usePage.ts` handles hash navigation and focus; `useUniverse.ts` connects React to the canvas renderer. Theme colours and the remembered choice live in `src/themes.ts`; light-theme page styles are the `[data-theme='starlight']` overrides at the end of `src/style.css`.
 
 Cloudflare preparation: the frozen pnpm install and production build pass with pnpm 11.25.0. The static output includes `index.html`, fingerprinted assets, favicon and `_headers`; upload the contents of `dist/`. Cloudflare account deployment remains a user step.

@@ -71,12 +71,39 @@ h1:focus {
   position: relative;
   z-index: 3;
 }
-.site-header nav {
+.header-bar {
   display: flex;
+  align-items: center;
   gap: 34px;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+}
+.site-header nav {
+  display: flex;
+  gap: 34px;
+}
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #9ea493;
+}
+.theme-toggle svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  transition: transform 0.6s ease;
+}
+.theme-toggle:hover svg {
+  transform: rotate(45deg);
 }
 .site-header nav a {
   position: relative;
@@ -396,10 +423,13 @@ h1:focus {
     height: 80px;
     margin: 0 6%;
   }
-  .site-header nav {
-    gap: 24px;
+  .header-bar {
+    gap: 18px;
     position: static;
     transform: none;
+  }
+  .site-header nav {
+    gap: 24px;
   }
   .site-header nav a {
     font-size: 11px;
@@ -524,4 +554,80 @@ h1:focus {
   font-size: clamp(32px, 9vw, 130px);
   color: var(--accent);
   font-family: Arial, sans-serif;
+}
+
+/* Starlight: ivory and antique gold. Only overrides; the void theme above is the default. */
+:root[data-theme='starlight'] {
+  color: #2e2618;
+  background: #f5efe2;
+  color-scheme: light;
+  --accent: #a8792a;
+  --muted: #8a7a5e;
+  --line: #9e72262e;
+}
+:root.theme-shifting,
+:root.theme-shifting * {
+  transition:
+    color 0.8s ease,
+    background-color 0.8s ease,
+    border-color 0.8s ease;
+}
+[data-theme='starlight'] ::selection {
+  color: #fffaf0;
+}
+[data-theme='starlight'] .inner-page > canvas {
+  opacity: 0.38;
+}
+[data-theme='starlight'] .site-header nav a,
+[data-theme='starlight'] .theme-toggle,
+[data-theme='starlight'] .controls button,
+[data-theme='starlight'] .text-link {
+  color: #8a7655;
+}
+[data-theme='starlight'] .site-header nav a[aria-current='page'] {
+  color: #2e2618;
+}
+[data-theme='starlight'] .site-header nav a:hover,
+[data-theme='starlight'] .theme-toggle:hover,
+[data-theme='starlight'] .controls button:hover,
+[data-theme='starlight'] .text-link:hover {
+  color: var(--accent);
+}
+[data-theme='starlight'] .primary-link {
+  border-bottom-color: #a8792a80;
+}
+[data-theme='starlight'] .status-dot {
+  box-shadow: 0 0 10px #c8962f55;
+}
+[data-theme='starlight'] .page-topline,
+[data-theme='starlight'] .focus-list span,
+[data-theme='starlight'] .project-tags span {
+  color: #7d6a48;
+}
+[data-theme='starlight'] .page-lead,
+[data-theme='starlight'] .page-closing p,
+[data-theme='starlight'] .project-card p {
+  color: #6f6250;
+}
+[data-theme='starlight'] .fact > .eyebrow,
+[data-theme='starlight'] .fact small,
+[data-theme='starlight'] .slot-number {
+  color: #8f7f62;
+}
+[data-theme='starlight'] .slot-caption {
+  color: #a39270;
+}
+[data-theme='starlight'] .empty-slot {
+  background: linear-gradient(135deg, #c8962f12, #fffaf080);
+}
+[data-theme='starlight'] .slot-orbit,
+[data-theme='starlight'] .slot-orbit:before {
+  border-color: #a8792a45;
+}
+[data-theme='starlight'] .project-art {
+  background: #efe5cf;
+}
+[data-theme='starlight'] .skip-link {
+  background: #a8792a;
+  color: #fffaf0;
 }
