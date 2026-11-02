@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { Anomaly } from './Anomaly';
 import { PAGES } from './navigation';
 import { AboutPage, HomePage, ProjectsPage } from './pages';
 import { usePage } from './usePage';
@@ -15,7 +16,7 @@ export function App() {
   const canvas = useRef<HTMLCanvasElement>(null);
   const { paused, theme, canvasAvailable, togglePaused, toggleTheme } = useUniverse(
     canvas,
-    page === 'home',
+    false,
   );
   const starlight = theme === 'starlight';
   const PageContent = PAGE_COMPONENTS[page];
@@ -66,6 +67,7 @@ export function App() {
           </button>
         </div>
       </header>
+      {page === 'home' && <Anomaly paused={paused} />}
       <PageContent heading={heading} />
       <footer className="site-footer">
         <nav className="social-links" aria-label="Social links">
