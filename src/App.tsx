@@ -6,7 +6,7 @@ import { useUniverse } from './useUniverse';
 
 const PAGE_COMPONENTS = { home: HomePage, about: AboutPage, projects: ProjectsPage };
 const SOCIAL_LINKS = [
-  { label: 'GitHub', href: 'https://github.com/abdullah-ukaea' },
+  { label: 'GitHub', href: 'https://github.com/abdullah-robots' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/abdullah-saleem-147044239/' },
 ];
 
