@@ -632,44 +632,51 @@ h1:focus {
   color: #fffaf0;
 }
 
-/* The monochrome silhouette remains independent of the surrounding scene. */
+/* A quiet point study sits between the two existing celestial scenes. */
 .anomaly {
   position: absolute;
   top: 46svh;
   left: 50%;
-  width: min(42vw, 49svh, 460px);
+  width: min(43vw, 53svh, 490px);
   transform: translate(-50%, -50%);
   pointer-events: none;
+  color: #d9dfcf;
+}
+[data-theme='starlight'] .anomaly {
+  color: #806c49;
 }
 .anomaly svg {
   display: block;
   width: 100%;
   overflow: visible;
 }
-.anomaly-aura {
-  transform-origin: 200px 230px;
-  animation: aura-breathe 8s ease-in-out infinite alternate;
+.proportion-guides {
+  opacity: 0.18;
 }
-.anomaly-figure {
-  animation: figure-drift 8s ease-in-out infinite alternate;
+.proportion-study {
+  opacity: 0.88;
+  animation: study-breathe 9s ease-in-out infinite alternate;
+}
+.proportion-echo {
+  opacity: 0.42;
+}
+.proportion-anatomy {
+  opacity: 0.55;
+}
+.proportion-grain {
+  opacity: 0.85;
 }
 .anomaly-paused * {
   animation-play-state: paused !important;
 }
-@keyframes aura-breathe {
+@keyframes study-breathe {
   to {
-    transform: scale(1.035, 1.015);
-    opacity: 0.78;
-  }
-}
-@keyframes figure-drift {
-  to {
-    transform: translateY(-2px);
+    opacity: 0.74;
   }
 }
 @media (max-width: 650px) {
   .anomaly {
-    width: min(78vw, 39svh);
+    width: min(86vw, 43svh);
     top: 42svh;
   }
 }
