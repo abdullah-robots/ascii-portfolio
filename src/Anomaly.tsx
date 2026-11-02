@@ -1,65 +1,75 @@
-// A deliberately imperfect aperture. Fixed noise avoids random changes on React renders.
-function boundary(radius: number, phase: number): string {
-  return (
-    Array.from({ length: 180 }, (_, index) => {
-      const angle = (index / 180) * Math.PI * 2;
-      const roughness =
-        Math.sin(angle * 13 + phase) * 3 +
-        Math.sin(angle * 37 + phase) * 2 +
-        Math.sin(angle * 71) * 1.8;
-      const r = radius + roughness;
-      return `${index === 0 ? 'M' : 'L'}${200 + Math.cos(angle) * r},${200 + Math.sin(angle) * r}`;
-    }).join(' ') + 'Z'
-  );
-}
+import { useId } from 'react';
 
-const APERTURE = boundary(157, 0);
-const FRINGE = boundary(165, 2);
+// A continuous silhouette avoids overlapping limb outlines at small screen sizes.
+const FIGURE =
+  'M166 141 C160 131 158 116 160 99 C159 72 172 58 194 57 C219 55 235 70 235 96 L234 119 C238 117 241 122 239 131 C237 139 233 143 229 144 L226 155 C240 160 250 173 255 195 L269 241 C274 258 270 274 263 285 C285 296 305 308 306 322 C307 338 285 343 262 341 L230 339 C222 343 219 355 208 361 C199 366 186 363 185 354 C184 342 192 332 195 324 L178 321 C175 334 174 348 165 355 C154 365 139 370 129 364 C122 360 126 351 134 344 L142 330 C144 316 140 303 135 285 L120 246 C102 240 96 231 100 219 C106 201 119 183 135 173 C142 164 154 161 168 159 Z';
+
+// Fixed noise and a handful of ellipses make a repeatable, body-shaped stipple field.
+// Thousands of dots share two paths, so there are no per-particle DOM nodes or timers.
+function noise(value: number): number {
+  const n = Math.sin(value * 127.1 + 311.7) * 43758.5453;
+  return n - Math.floor(n);
+}
+const ENVELOPE = [
+  [198, 111, 55, 72],
+  [192, 219, 77, 96],
+  [132, 220, 43, 45],
+  [159, 292, 45, 68],
+  [246, 315, 80, 42],
+  [180, 348, 61, 27],
+] as const;
+
+function auraDots(): { black: string; white: string } {
+  const black: string[] = [];
+  const white: string[] = [];
+  for (let index = 0; index < 42000; index++) {
+    const x = 48 + noise(index * 3) * 308;
+    const y = 16 + noise(index * 3 + 1) * 372;
+    const distance = Math.min(
+      ...ENVELOPE.map(([cx, cy, rx, ry]) => Math.hypot((x - cx) / rx, (y - cy) / ry)),
+    );
+    const density = Math.exp(-Math.pow(Math.max(0, distance - 0.76) / 0.31, 2));
+    if (noise(index * 3 + 2) > density * 0.86) continue;
+    // Round caps turn each short mark into a dot; vary length slightly for organic grain.
+    const length = (noise(index + 60000) * 0.35 + 0.01).toFixed(2);
+    const dot = `M${x.toFixed(2)} ${y.toFixed(2)}h${length}`;
+    (noise(index + 90000) < 0.19 ? white : black).push(dot);
+  }
+  return { black: black.join(''), white: white.join('') };
+}
+const DOTS = auraDots();
 
 export function Anomaly({ paused }: { paused: boolean }) {
+  const gradient = useId();
   return (
     <div className={`anomaly${paused ? ' anomaly-paused' : ''}`} aria-hidden="true">
       <svg viewBox="0 0 400 400" fill="none">
-        <path className="anomaly-fringe" d={FRINGE} stroke="#777" strokeWidth="1" />
-        <path
-          className="anomaly-aperture"
-          d={APERTURE}
-          fill="#f1f1ee"
-          stroke="#151515"
-          strokeWidth="9"
-        />
-        <path d={APERTURE} stroke="#fff" strokeWidth="1" strokeDasharray="1 9 3 13" />
-        <g className="anomaly-interior">
-          {/* Interrupted horizontal lines suggest a space with no visible horizon. */}
-          <path
-            d="M62 227h36m-26 9h22m206-9h36m-42 9h29M91 279h27m162 0h29M126 315h148"
-            stroke="#cececa"
-            strokeWidth=".7"
-          />
-          <ellipse cx="201" cy="299" rx="76" ry="9" fill="#131313" opacity=".09" />
-          <g
-            className="anomaly-figure"
-            fill="#fff"
-            stroke="#191919"
-            strokeWidth="2.1"
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          >
-            {/* A seated, anonymous figure: bent knees, one resting arm, one grounded hand. */}
-            <path d="M180 169 Q163 170 152 187 L128 215 Q123 224 131 234 L150 245 L141 269 Q126 283 129 291 Q133 298 148 295 L168 285 L188 272 L212 278 Q234 296 264 293 Q281 290 279 282 Q277 274 262 267 L239 252 L230 200 Q227 177 213 171Z" />
-            <path d="M177 164 L179 178 Q196 188 211 175 L211 159" />
-            <path d="M174 132 Q171 111 182 102 Q199 92 213 104 Q224 114 221 135 L218 151 Q213 167 199 168 Q183 168 178 151Z" />
-            <path d="M163 184 Q151 198 143 217 L169 230 L182 239 Q189 240 188 234 L177 224 L157 213 L174 199" />
-            <path d="M216 185 Q226 201 224 226 L223 256 L232 274 L230 281 L219 277 L209 260 L208 227" />
-            <path d="M151 246 Q157 232 171 237 Q182 244 188 263 L194 277 M168 285 L176 266 M234 264 Q247 274 260 280 M191 276 Q207 281 220 279" />
-          </g>
+        <defs>
+          <radialGradient id={gradient} cx=".42" cy=".3" r=".85">
+            <stop stopColor="#fff" />
+            <stop offset=".72" stopColor="#f9f9f7" />
+            <stop offset="1" stopColor="#dededb" />
+          </radialGradient>
+        </defs>
+        <g className="anomaly-aura" strokeLinecap="round" strokeWidth="1.5">
+          <path d={DOTS.black} stroke="#101111" />
+          <path d={DOTS.white} stroke="#fff" opacity=".62" />
         </g>
-        <path
-          className="anomaly-scar"
-          d="M42 185l8-6-4-11m308 61-7 4 3 12M174 40l5 7 11-5M216 360l-7-8-8 5"
-          stroke="#9d9d94"
-          strokeWidth="1"
-        />
+        <g className="anomaly-figure">
+          <ellipse cx="211" cy="339" rx="103" ry="18" fill="#101111" />
+          <path d={FIGURE} fill={`url(#${gradient})`} stroke="#181919" strokeWidth=".8" />
+          {/* Only the negative spaces describe the arms; no overlapping construction lines. */}
+          <path
+            d="M144 192 Q133 200 130 211 L149 218 Q153 202 144 192Z M245 224 Q248 244 252 254 L244 278 L236 274 L238 250Z"
+            fill="#101111"
+          />
+          <path
+            d="M120 246 Q143 243 155 258 M195 324 Q202 311 211 309 M168 159 Q183 173 202 171"
+            stroke="#91918d"
+            strokeWidth="1"
+            strokeLinecap="round"
+          />
+        </g>
       </svg>
     </div>
   );

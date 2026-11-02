@@ -632,7 +632,7 @@ h1:focus {
   color: #fffaf0;
 }
 
-/* This aperture deliberately keeps its own monochrome palette in both worlds. */
+/* The monochrome silhouette remains independent of the surrounding scene. */
 .anomaly {
   position: absolute;
   top: 46svh;
@@ -646,39 +646,25 @@ h1:focus {
   width: 100%;
   overflow: visible;
 }
-.anomaly-aperture {
-  transform-origin: 200px 200px;
-  animation: aperture-breathe 9s ease-in-out infinite alternate;
-}
-.anomaly-fringe {
-  transform-origin: 200px 200px;
-  animation: aperture-drift 23s linear infinite;
-  opacity: 0.55;
+.anomaly-aura {
+  transform-origin: 200px 230px;
+  animation: aura-breathe 8s ease-in-out infinite alternate;
 }
 .anomaly-figure {
-  animation: figure-drift 7s ease-in-out infinite alternate;
+  animation: figure-drift 8s ease-in-out infinite alternate;
 }
-.anomaly-scar {
-  animation: aperture-breathe 9s ease-in-out infinite alternate;
-  transform-origin: 200px 200px;
-}
-.anomaly-paused *,
-.anomaly-paused {
+.anomaly-paused * {
   animation-play-state: paused !important;
 }
-@keyframes aperture-breathe {
+@keyframes aura-breathe {
   to {
-    transform: scale(1.018, 0.987) rotate(1deg);
-  }
-}
-@keyframes aperture-drift {
-  to {
-    transform: rotate(360deg);
+    transform: scale(1.035, 1.015);
+    opacity: 0.78;
   }
 }
 @keyframes figure-drift {
   to {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
   }
 }
 @media (max-width: 650px) {
