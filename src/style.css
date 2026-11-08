@@ -631,3 +631,67 @@ h1:focus {
   background: #a8792a;
   color: #fffaf0;
 }
+
+/* A quiet point study sits between the two existing celestial scenes. */
+.anomaly {
+  position: absolute;
+  top: 46svh;
+  left: 50%;
+  width: min(43vw, 53svh, 490px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  color: #d7ff8b;
+}
+[data-theme='starlight'] .anomaly {
+  color: #9e7226;
+}
+.anomaly svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+.proportion-guides {
+  opacity: 0.18;
+}
+.proportion-study {
+  opacity: 0.88;
+  animation: study-breathe 9s ease-in-out infinite alternate;
+}
+.proportion-echo {
+  opacity: 0.42;
+}
+.proportion-anatomy {
+  opacity: 0.55;
+}
+.proportion-grain {
+  opacity: 0.85;
+}
+.anomaly-paused * {
+  animation-play-state: paused !important;
+}
+@keyframes study-breathe {
+  to {
+    opacity: 0.74;
+  }
+}
+@media (max-width: 650px) {
+  .anomaly {
+    width: min(86vw, 43svh);
+    top: 42svh;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .anomaly * {
+    animation: none;
+  }
+}
+
+.proportion-glyphs {
+  font:
+    5px 'Courier New',
+    monospace;
+  fill: currentColor;
+  stroke: none;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
