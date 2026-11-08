@@ -685,3 +685,13 @@ h1:focus {
     animation: none;
   }
 }
+
+.proportion-glyphs {
+  font:
+    5px 'Courier New',
+    monospace;
+  fill: currentColor;
+  stroke: none;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}

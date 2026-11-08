@@ -1,3 +1,6 @@
+import { useRef } from 'react';
+import { usePointInteraction, type StudyPoint } from './usePointInteraction';
+
 // Original proportion study, rendered entirely as points rather than a filled avatar.
 const TORSO =
   'M189 102 L188 112 Q172 112 165 121 Q169 144 178 164 Q181 179 175 198 Q172 209 181 221 L194 226 L200 217 L206 226 L219 221 Q228 209 225 198 Q219 179 222 164 Q231 144 235 121 Q228 112 212 112 L211 102';
@@ -47,8 +50,8 @@ function limbDensity(x: number, y: number): number {
   return density;
 }
 
-function stipple(): string {
-  const dots: string[] = [];
+function stipple(): StudyPoint[] {
+  const dots: StudyPoint[] = [];
   for (let i = 0; i < 65000; i++) {
     const x = 45 + noise(i * 3) * 310;
     const y = 56 + noise(i * 3 + 1) * 296;
@@ -59,16 +62,22 @@ function stipple(): string {
     let density = head < 1 ? 0.18 + head * 0.22 : 0;
     if (torso) density = 0.12 + (Math.abs(x - 200) / torsoWidth) * 0.3;
     density = Math.max(density, limbDensity(x, y), limbDensity(400 - x, y));
-    if (noise(i * 3 + 2) < density) dots.push(`M${x.toFixed(2)} ${y.toFixed(2)}h.01`);
+    if (noise(i * 3 + 2) < density) dots.push({ x, y });
   }
-  return dots.join('');
+  return dots;
 }
-const GRAIN = stipple();
+const POINTS = stipple();
+const GRAIN = POINTS.map(({ x, y }) => `M${x.toFixed(2)} ${y.toFixed(2)}h.01`).join('');
 
 export function Anomaly({ paused }: { paused: boolean }) {
+  const svg = useRef<SVGSVGElement>(null);
+  const grain = useRef<SVGPathElement>(null);
+  const glyphs = useRef<SVGGElement>(null);
+  usePointInteraction(svg, grain, glyphs, POINTS, GRAIN, paused);
   return (
     <div className={`anomaly${paused ? ' anomaly-paused' : ''}`} aria-hidden="true">
       <svg
+        ref={svg}
         viewBox="0 0 400 400"
         fill="none"
         stroke="currentColor"
@@ -98,11 +107,13 @@ export function Anomaly({ paused }: { paused: boolean }) {
             <path d="M200 143V164 M200 180V193 M193 91Q200 95 207 91 M189 77H195 M205 77H211" />
           </g>
           <path
+            ref={grain}
             className="proportion-grain"
             d={GRAIN}
             strokeWidth="1.5"
             strokeDasharray="none"
           />
+          <g ref={glyphs} className="proportion-glyphs" />
         </g>
       </svg>
     </div>
