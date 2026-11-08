@@ -685,3 +685,8 @@ h1:focus {
     animation: none;
   }
 }
+
+/* In the night scene, the scattered points alone define the body. */
+:root:not([data-theme='starlight']) .proportion-study > :not(.proportion-grain) {
+  display: none;
+}
