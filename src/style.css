@@ -640,10 +640,10 @@ h1:focus {
   width: min(43vw, 53svh, 490px);
   transform: translate(-50%, -50%);
   pointer-events: none;
-  color: #d9dfcf;
+  color: #d7ff8b;
 }
 [data-theme='starlight'] .anomaly {
-  color: #806c49;
+  color: #9e7226;
 }
 .anomaly svg {
   display: block;
